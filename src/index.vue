@@ -20,14 +20,14 @@
     import members from './config/members';
     import grades from './config/grades';
 
-    window.onload = function() {
-        try {
-            TagCanvas.Start('myCanvas');
-        } catch(e) {
-            // something went wrong, hide the canvas container
-            document.getElementById('myCanvasContainer').style.display = 'none';
-        }
-    };
+    // window.onload = function() {
+    //     try {
+    //         TagCanvas.Start('myCanvas');
+    //     } catch(e) {
+    //         // something went wrong, hide the canvas container
+    //         document.getElementById('myCanvasContainer').style.display = 'none';
+    //     }
+    // };
 
     export default {
         name: "index",
@@ -39,10 +39,8 @@
             }
         },
         created(){
+            // console.log(TagCanvas);
             // TagCanvas.Start('myCanvas');
-            // console.log(this.$refs);
-            // this.$refs.myCanvas.width = document.body.offsetWidth;
-            // this.$refs.myCanvas.height = document.body.offsetHeight;
         },
         methods: {
             start(){
