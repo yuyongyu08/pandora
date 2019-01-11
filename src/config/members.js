@@ -311,4 +311,4 @@ let repetition = members.filter(function(o,i,arr){
 
 console.log('重复的', repetition);
 
-module.exports = members;
+module.exports = members || [];
