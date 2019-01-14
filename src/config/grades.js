@@ -26,6 +26,13 @@ module.exports = [
         list: [],
     },
     {
+        key: 0,
+        text: '特别奖',
+        limitedCount: 3,
+        roundSize: 1,
+        list: [],
+    },
+    {
         key: 1,
         text: '一等奖',
         limitedCount: 5,
