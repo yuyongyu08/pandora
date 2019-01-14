@@ -64,6 +64,16 @@
     import tagCanvasConfig from './config/tagCanvas';
     let machine = tagCanvasConfig.sphere; //sphere, hcylinder
 
+    function renderTagList (el, dataList){
+        let html = [ '<ul>' ];
+        dataList.forEach(function(item){
+            html.push(`<li><a href="#" style="color: ${item.selected ? '#1cb841': 'white'};">${item.department ? item.department + '-' : ''}${item.name}</a></li>`);
+        });
+        html.push('</ul>');
+        el.innerHTML = html.join('');
+    }
+
+
     export default {
         name: "index",
         data: function () {
@@ -90,12 +100,10 @@
         created(){
             //1.获奖名单
             this.luckyGuys.list = JSON.parse(localStorage.getItem(this.luckyGuys.key)) || [];
-            console.log(this.luckyGuys.key, this.luckyGuys);
             this.vaidateRepetiton(this.luckyGuys.list);
 
             //2.缺席名单
             this.absenteeList.list = JSON.parse(localStorage.getItem(this.absenteeList.key)) || [];
-            console.log(this.absenteeList.key, this.absenteeList);
 
             //3.未被抽到的名单
             if(this.luckyGuys.list.length>0){
@@ -114,9 +122,8 @@
             }else{
                 this.remainingList = JSON.parse(JSON.stringify(this.members));
             }
-            console.log('未被抽到的名单', this.remainingList);
 
-            this.markLuckyGuys(this.members, this.luckyGuys.list);
+            this.markLuckyGuys(this.members, this.luckyGuys.list.concat(this.absenteeList.list));
 
             //4.获取各等级奖项已经抽出的名单
             this.grades.map(function (value) {
@@ -214,7 +221,6 @@
                     this.luckyGuys.list.push(luckyGuy);
                     this.remainingList.splice(index, 1);
                 }
-                console.log('待抽取名单：', this.remainingList);
                 this.vaidateRepetiton(this.luckyGuys.list);
 
                 grade.list = grade.list.concat(this.currentLuckyGuys);
@@ -223,7 +229,9 @@
                 localStorage.setItem(this.luckyGuys.key, JSON.stringify(this.luckyGuys.list));
 
                 this.markLuckyGuys(this.members, grade.list);
-                // TagCanvas.Reload('myCanvas');
+
+                renderTagList(document.getElementById('myCanvas'), this.members);
+                TagCanvas.Reload('myCanvas');
             },
 
             markLuckyGuys(memberList = [], luckGuys = []){
@@ -271,12 +279,14 @@
                     el.width = document.body.offsetWidth -100;
                     el.height = document.body.offsetHeight -100;
 
-                    let html = [ '<ul>' ];
-                    binding.value.forEach(function(item){
-                        html.push(`<li><a href="#" style="color: ${item.selected ? '#ff9a28': 'white'};">${item.department ? item.department + '-' : ''}${item.name}</a></li>`);
-                    });
-                    html.push('</ul>');
-                    el.innerHTML = html.join('');
+                    // let html = [ '<ul>' ];
+                    // binding.value.forEach(function(item){
+                    //     html.push(`<li><a href="#" style="color: ${item.selected ? '#ff9a28': 'white'};">${item.department ? item.department + '-' : ''}${item.name}</a></li>`);
+                    // });
+                    // html.push('</ul>');
+                    // el.innerHTML = html.join('');
+
+                    renderTagList(el, binding.value);
 
                     TagCanvas.Start('myCanvas', '', {
                         shape: machine.shape,
@@ -388,9 +398,6 @@
             left: 50%;
             transform: translateX(-50%);
         }
-
-
-
 
         .tool-bar{
             position: absolute;
