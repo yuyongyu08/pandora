@@ -214,6 +214,7 @@
                 for (let i = 0; i < roundSize; i++){
                     let index = Math.floor(Math.random() * this.remainingList.length);
                     let luckyGuy = this.remainingList[index];
+                    luckyGuy.garde = grade.text;
 
                     this.currentLuckyGuys.push(luckyGuy);
                     this.luckyGuys.list.push(luckyGuy);
