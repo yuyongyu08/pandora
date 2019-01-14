@@ -1,36 +1,57 @@
 <template>
     <div class="main">
-        <div id="myCanvasContainer" v-my-canvas></div>
+        <div id="myCanvasContainer">
+            <canvas id="myCanvas" v-my-tag-canvas="members"></canvas>
+        </div>
         <div class="lucky-guys" v-if="currentLuckyGuys.length > 0">
             <div class="list">
                 <span class="guy" v-for="(guy, $index) in currentLuckyGuys" :key="$index">
-                    {{guy.name}}<br/>
+                    {{getMemberTitle(guy)}}<br/>
                     {{guy.jobNo}}
+                    <img class="delete" src="./assets/imgs/tab_delete.png"/>
                 </span>
             </div>
         </div>
-        <button class="trigger" @click="toggleRolling()">{{!rolling ? '开始':'停止'}}</button>
+        <button class="trigger success" @click="toggleRolling()">{{!rolling ? '开始':'停止'}}</button>
 
-        <div class="tool-bar">
-            <div>
+        <div class="tool-bar" :class="{'hide': hideConfig}">
+            <div class="config-trigger" @click="hideConfig = !hideConfig">{{hideConfig ? '展开':'收起'}}</div>
+
+            <div class="bar">
                 <template v-for="grade in grades">
-                    <input type="radio" :value="grade.key" v-model="currentGrade.key" @click="selectGrade(grade)"><label>{{grade.text}}</label>
+                    <input
+                            :id="grade.key"
+                            class="grade"
+                            type="radio"
+                            :value="grade.key"
+                            v-model="currentGrade.key"
+                            @click="selectGrade(grade)"><label :for="grade.key">{{grade.text}}</label>
                 </template>
             </div>
-            <div>
+            <div class="bar">
                 <template v-for="roundSize in roundSizes">
-                    <input type="radio" :value="roundSize" v-model="currentRoundSize" @click="selectRoundSize(roundSize)"><label>{{roundSize}}个</label>
+                    <input
+                            :id="roundSize"
+                            class="round-size"
+                            type="radio"
+                            :value="roundSize"
+                            v-model="currentRoundSize"
+                            ><label :for="roundSize">{{roundSize}}个</label>
                 </template>
-                <input v-model="currentRoundSize"/>
+                <input class="customer" placeholder="输入正整数" @blur="validateRoundSize()" v-model="currentRoundSize"/>
             </div>
-            <button @click="reset()">重置</button>
 
-            <div>
-                <h2>{{currentGrade.text}}({{currentGrade.list.length}}/{{currentGrade.limitedCount}})</h2>
+            <div class="lucky-list">
+                <h2>{{currentGrade.text}}(<span class="counter">{{currentGrade.list.length}}/{{currentGrade.limitedCount}}</span>)</h2>
                 <ul>
-                    <li v-for="(luckyGuy,$index) in currentGrade.list" :key="$index">{{luckyGuy.name}}</li>
+                    <li v-for="(luckyGuy,$index) in currentGrade.list" :key="$index">
+                        <i class="delete"/>{{getMemberTitle(luckyGuy)}}
+                    </li>
                 </ul>
             </div>
+
+            <button class="warning" @click="reset()">重置(危险)</button>
+
 
 
         </div>
@@ -40,11 +61,14 @@
 <script>
     import members from './config/members';
     import grades from './config/grades';
+    import tagCanvasConfig from './config/tagCanvas';
+    let machine = tagCanvasConfig.sphere; //sphere, hcylinder
 
     export default {
         name: "index",
         data: function () {
             return {
+                hideConfig: false,
                 members: members, //抽奖名单
                 grades: grades, //奖次配置
                 currentGrade: grades[0],
@@ -56,6 +80,13 @@
                 currentRoundSize: 10,
                 rolling: false
             }
+        },
+        watch: {
+            // "currentRoundSize": function (newValue, oldValue) {
+            //     if(isNaN(newValue)){
+            //         alert('请输入正整数')
+            //     }
+            // }
         },
         created(){
             //1.获取已经抽取的名单和未抽取的名单
@@ -74,6 +105,8 @@
             }
             console.log('未被抽到的名单', this.remainingList);
 
+            this.markLuckyGuys(this.members, this.luckyGuys);
+
 
             //2.获取各等级奖项已经抽出的名单
             this.grades.map(function (value) {
@@ -85,16 +118,18 @@
             this.absenteeList = JSON.parse(localStorage.getItem('缺席名单')) || [];
         },
         methods: {
+            getMemberTitle(member){
+                return member.department ? member.department + '-' + member.name : member.name;
+            },
+
             selectGrade(grade){
-                this.selectRoundSize(grade.roundSize);
+                this.currentLuckyGuys = [];
+
+                this.currentRoundSize = grade.roundSize;
 
                 this.currentGrade = grade;
 
                 this.currentGrade.list = JSON.parse(localStorage.getItem(grade.text)) || [];
-            },
-
-            selectRoundSize(size){
-                this.currentRoundSize = size
             },
 
             reset(){
@@ -114,13 +149,13 @@
 
                 if(this.rolling){
                     this.chooseLuckyGuysRandomly(this.currentRoundSize, this.currentGrade);
-                    TagCanvas.SetSpeed('myCanvas', [0.5, -0.25]);
+                    TagCanvas.SetSpeed('myCanvas', machine.normalSpeed);
                 }else{
                     if(!this.validateGrade(this.currentGrade)){
                         return;
                     }
 
-                    TagCanvas.SetSpeed('myCanvas', [5, 1]);
+                    TagCanvas.SetSpeed('myCanvas', machine.quickSpeed);
                 }
                 this.rolling = !this.rolling;
             },
@@ -130,6 +165,13 @@
                     return alert( '【警告⚠️】' + grade.text + '已经抽取' +  grade.limitedCount + '个! ' )
                 }
                 return true;
+            },
+
+            validateRoundSize(){
+                if(isNaN(this.currentRoundSize) || !this.currentRoundSize){
+                    alert('请输入正整数');
+                    this.currentRoundSize = this.currentGrade.roundSize;
+                }
             },
 
             chooseLuckyGuysRandomly(roundSize, grade){
@@ -147,41 +189,58 @@
 
                 localStorage.setItem(grade.text, JSON.stringify(grade.list));
                 localStorage.setItem('总获奖名单', JSON.stringify(this.luckyGuys));
+
+                this.markLuckyGuys(this.members, grade.list);
+                TagCanvas.Reload('myCanvas');
+            },
+
+            markLuckyGuys(memberList = [], luckGuys = []){
+                memberList = memberList.map((item) => {
+
+                    let index = luckGuys.findIndex((v)=>{
+                        return item.jobNo == v.jobNo;
+                    });
+
+                    if(index != -1){
+                        return item.selected = true;
+                    }
+
+                });
             },
 
             deleteAbsentee(guy){
                 //1.从本轮名单中删除
                 //2.从本次奖项名单中删除
                 //3.从总的获奖名单中删除
+                //4.存储到缺席名单中
             }
 
         },
         directives: {
-            myCanvas: {
-                // directive definition
-                inserted: function (el) {
-                    let canvas = document.createElement('canvas');
-                    canvas.id = 'myCanvas';
-                    // canvas.width = document.body.offsetWidth;
-                    // canvas.height = document.body.offsetHeight;
+            myTagCanvas: {
+                inserted: function (el, binding) {
+                    console.log('binding.value', binding.value);
 
-                    canvas.width = 500;
-                    canvas.height = 500;
+                    el.width = document.body.offsetWidth -100;
+                    el.height = document.body.offsetHeight -100;
 
 
                     let html = [ '<ul>' ];
-                    members.forEach(function(item){
-                        html.push(`<li><a href="#" style="color: red;">${item.department ? item.department + '-' : ''}${item.name}</a></li>`);
+                    binding.value.forEach(function(item){
+                        html.push(`<li><a href="#" style="color: ${item.selected ? '#ff9a28': 'white'};">${item.department ? item.department + '-' : ''}${item.name}</a></li>`);
                     });
                     html.push('</ul>');
-                    html.join('');
+                    el.innerHTML = html.join('');
 
-                    canvas.innerHTML = html;
-
-                    el.appendChild(canvas);
+                    // el.appendChild(canvas);
 
                     TagCanvas.Start('myCanvas', '', {
-                        shuffleTags: true
+                        shape: machine.shape,
+                        initial: machine.normalSpeed,
+                        dragControl: 1,
+                        shuffleTags: true,
+                        textColour: '',
+                        noMouse: true,
                     });
                 }
             }
@@ -191,33 +250,59 @@
 
 <style lang="less">
     @import "./assets/css/reset";
+    html, body{
+        width: 100%;
+        height: 100%;
+    }
+
+    #myCanvasContainer{
+        text-align: center;
+    }
 
     button{
         display: inline-block;
         margin: 5px;
-        padding: 10px 0;
+        padding: 10px;
         text-align: center;
-        width: 50px;
+        min-width: 60px;
         border-radius: 2px;
         border: none;
         background-color: #E6E6E6;
+        color: #fff;
+        font-size: 14px;
+
+        &:focus {
+            outline: 0
+        }
+
+        &.success {
+            background: rgb(28, 184, 65);
+        }
+
+        &.warning {
+            background: #ff2419;
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+        }
     }
 
     .main{
+        overflow: hidden;
         width: 100%;
         height: 100%;
-        background: url("./assets/imgs/bgk.jpg");
+        background: #121936 url(./assets/imgs/bgk.jpg) no-repeat center;
+        background-size: 100% 100% ;
 
         .lucky-guys{
             width: 100%;
             height: 100%;
             position: absolute;
             top: 0;
-            background-color: rgba(149, 149, 149, .5);
             text-align: center;
 
             .list{
-                width: 870px;
+                width: 700px;
                 margin: 0 auto;
                 position: relative;
                 top: 20%;
@@ -225,15 +310,24 @@
 
             .guy{
                 display: inline-block;
-                font-size: 25px;
-                width: 150px;
+                font-size: 20px;
+                min-width: 100px;
                 background: #fff;
                 line-height: 30px;
-                color: #000;
+                color: #1cb841;
                 margin: 5px;
                 border-radius: 10px;
                 box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
-                padding: 10px 0;
+                padding: 10px;
+                position: relative;
+
+                .delete{
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    width: 25px;
+                    height: 25px;
+                }
             }
         }
 
@@ -244,16 +338,82 @@
             transform: translateX(-50%);
         }
 
+
+
+
         .tool-bar{
             position: absolute;
             top: 0;
             right: 0;
-            background-color: #d5e7f3;
+            color: #FFF;
+            padding: 20px 10px;
+            height: 100%;
+            background-color: rgba(230, 230, 230, 0.1);
 
-            button{
-                /*position: absolute;*/
-                /*bottom: 10px;*/
-                /*margin-left: 50%;*/
+            &.hide{
+                transform: translateX(100%);
+            }
+
+            .config-trigger{
+                display: inline-block;
+                position: absolute;
+                top: 0;
+                right: 100%;
+                color: #fff;
+                padding: 10px;
+                background-color: rgba(230, 230, 230, 0.1);
+            }
+
+            .bar{
+                line-height: 2em;
+            }
+
+            .grade, .round-size{
+                line-height: 2em;
+                vertical-align: text-top;
+            }
+
+            label{
+                font-size: 18px;
+                margin-right: 10px;
+                margin-left: 3px;
+            }
+
+            .lucky-list{
+                margin-top: 20px;
+
+                h2{
+                    font-size: 24px;
+                    text-align: center;
+
+                    .counter{
+                        color: #ff9a28;
+                    }
+                }
+
+                ul{
+                    width: 350px;
+
+                    li {
+                        width: 110px;
+                        line-height: 1.6em;
+                        word-wrap: break-word;
+                        word-break: keep-all;
+                        display: inline-block;
+                        margin-right: 5px;
+
+                        .delete{
+                            display: inline-block;
+                            width: 15px;
+                            height: 15px;
+                            background: #ff2419 url("./assets/imgs/item_delete.png") no-repeat center;
+                            background-size: 60%;
+                            border-radius: 50%;
+                            vertical-align: text-top;
+                            margin-right: 3px;
+                        }
+                    }
+                }
             }
         }
 

@@ -298,7 +298,7 @@ var Leader = [
 ];
 
 
-var members = [].concat(FE, QA, APP, RD_1, RD_2, RD_3, RD_4, PM_1, PM_2, PM_3, Leader).sort(function(){return Math.random()-.5});
+var members = [].concat(FE, QA, APP, RD_1, RD_2, RD_3, RD_4, PM_1, PM_2, PM_3, Leader);
 console.log('最终名单', members);
 
 
