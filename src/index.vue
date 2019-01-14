@@ -14,46 +14,44 @@
         </div>
         <button class="trigger success" @click="toggleRolling()">{{!rolling ? '开始':'停止'}}</button>
 
-        <div class="tool-bar" :class="{'hide': hideConfig}">
+        <div class="tool-bar">
             <div class="config-trigger" @click="toggleConfigView()">{{hideConfig ? '展开':'收起'}}</div>
+            <div class="content" v-show="!hideConfig">
+                <div class="bar">
+                    <template v-for="grade in grades">
+                        <input
+                                :id="grade.key"
+                                class="grade"
+                                type="radio"
+                                :value="grade.key"
+                                v-model="currentGrade.key"
+                                @click="selectGrade(grade)"><label :for="grade.key">{{grade.text}}</label>
+                    </template>
+                </div>
+                <div class="bar">
+                    <template v-for="roundSize in roundSizes">
+                        <input
+                                :id="roundSize"
+                                class="round-size"
+                                type="radio"
+                                :value="roundSize"
+                                v-model="currentRoundSize"
+                        ><label :for="roundSize">{{roundSize}}个</label>
+                    </template>
+                    <input class="customer" placeholder="输入正整数" @blur="validateRoundSize()" v-model="currentRoundSize"/>
+                </div>
 
-            <div class="bar">
-                <template v-for="grade in grades">
-                    <input
-                            :id="grade.key"
-                            class="grade"
-                            type="radio"
-                            :value="grade.key"
-                            v-model="currentGrade.key"
-                            @click="selectGrade(grade)"><label :for="grade.key">{{grade.text}}</label>
-                </template>
+                <div class="lucky-list">
+                    <h2>{{currentGrade.text}}(<span class="counter">{{currentGrade.list.length}}/{{currentGrade.limitedCount}}</span>)</h2>
+                    <ul>
+                        <li v-for="(luckyGuy,$index) in currentGrade.list" :key="$index">
+                            <i class="delete" @click="deleteAbsentee(luckyGuy)"/>{{getMemberTitle(luckyGuy)}}
+                        </li>
+                    </ul>
+                </div>
+
+                <button class="warning" @click="reset()">重置(危险)</button>
             </div>
-            <div class="bar">
-                <template v-for="roundSize in roundSizes">
-                    <input
-                            :id="roundSize"
-                            class="round-size"
-                            type="radio"
-                            :value="roundSize"
-                            v-model="currentRoundSize"
-                            ><label :for="roundSize">{{roundSize}}个</label>
-                </template>
-                <input class="customer" placeholder="输入正整数" @blur="validateRoundSize()" v-model="currentRoundSize"/>
-            </div>
-
-            <div class="lucky-list">
-                <h2>{{currentGrade.text}}(<span class="counter">{{currentGrade.list.length}}/{{currentGrade.limitedCount}}</span>)</h2>
-                <ul>
-                    <li v-for="(luckyGuy,$index) in currentGrade.list" :key="$index">
-                        <i class="delete" @click="deleteAbsentee(luckyGuy)"/>{{getMemberTitle(luckyGuy)}}
-                    </li>
-                </ul>
-            </div>
-
-            <button class="warning" @click="reset()">重置(危险)</button>
-
-
-
         </div>
     </div>
 </template>
@@ -404,7 +402,6 @@
             top: 0;
             right: 0;
             color: #FFF;
-            padding: 20px 10px;
             height: 100%;
             background-color: rgba(230, 230, 230, 0.1);
 
@@ -420,6 +417,10 @@
                 color: #fff;
                 padding: 10px;
                 background-color: rgba(230, 230, 230, 0.1);
+            }
+
+            .content{
+                margin: 20px 10px;
             }
 
             .bar{
