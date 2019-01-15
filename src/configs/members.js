@@ -28,13 +28,13 @@ var FE = [
     {"name":"李贞","jobNo":"4728"},
     {"name":"刘宇航","jobNo":"108455"},
     {"name":"黄忠贞","jobNo":"93897"},
-    {"name":"曹海涛","jobNo":"98516"},
     {"name":"王永平","jobNo":"98520"},
     {"name":"吴志鹏","jobNo":"72427"}
 ];
 FE.map(function (o) {
     return o.department = 'FE';
 });
+console.log('前端团队', '\n', FE);
 
 //2.测试团队
 var QA = [
@@ -65,6 +65,7 @@ var QA = [
 QA.map(function (o) {
     return o.department = 'QA';
 });
+console.log('测试团队', '\n', QA);
 
 //3.客户端团队
 var APP = [
@@ -87,6 +88,7 @@ var APP = [
 APP.map(function (o) {
     return o.department = 'APP';
 });
+console.log('客户端团队', '\n', APP);
 
 //4.后端-租房团队
 var RD_1 = [
@@ -123,6 +125,7 @@ var RD_1 = [
 RD_1.map(function (o) {
     return o.department = 'RD';
 });
+console.log('后端-租房团队', '\n', RD_1);
 
 //5.后端-商业地产团队
 var RD_2 = [
@@ -153,6 +156,7 @@ var RD_2 = [
 RD_2.map(function (o) {
     return o.department = 'RD';
 });
+console.log('后端-商业地产团队', '\n', RD_2);
 
 //6.后端-基础服务团队
 var RD_3 = [
@@ -184,6 +188,7 @@ var RD_3 = [
 RD_3.map(function (o) {
     return o.department = 'RD';
 });
+console.log('后端-基础服务团队', '\n', RD_3);
 
 //7.后端-赶集团队
 var RD_4 = [
@@ -199,6 +204,7 @@ var RD_4 = [
 RD_4.map(function (o) {
     return o.department = 'RD';
 });
+console.log('后端-赶集团队', '\n', RD_4);
 
 //8.产品-租房团队
 var PM_1 = [
@@ -209,7 +215,6 @@ var PM_1 = [
     {"name":"曲思桐","jobNo":"24055"},
     {"name":"吴桐","jobNo":"47647"},
     {"name":"路胜男","jobNo":"23746"},
-    {"name":"张京","jobNo":"95595"},
     {"name":"许春旸","jobNo":"102752"},
     {"name":"左炜","jobNo":"98556"},
     {"name":"王焕焕","jobNo":"108845"},
@@ -234,12 +239,12 @@ var PM_1 = [
     {"name":"赵燮","jobNo":"91614"},
     {"name":"郭昶杉","jobNo":"97268"},
     {"name":"高扬","jobNo":"95616"},
-    {"name":"胡宇凡","jobNo":"93502"},
-    {"name":"甘伟","jobNo":"96802"}
-];
+    {"name":"胡宇凡","jobNo":"93502"}
+    ];
 PM_1.map(function (o) {
     return o.department = 'PM';
 })
+console.log('产品-租房团队', '\n', PM_1);
 
 //9.产品-二手房团队
 var PM_2 = [
@@ -256,22 +261,20 @@ var PM_2 = [
     {"name":"赵雅楠","jobNo":"65604"},
     {"name":"刘璐","jobNo":"51055"},
     {"name":"廖晶琰","jobNo":"88402"},
-    {"name":"张炅","jobNo":"46679"},
-    {"name":"涂湾湾","jobNo":"98990"},
     {"name":"孙佳伟","jobNo":"93911"},
     // {"name":"余海军","jobNo":"6558"},
-    {"name":"陈麓伊","jobNo":"96612"}
 ];
 PM_2.map(function (o) {
     return o.department = 'PM';
 });
+console.log('产品-二手房团队', '\n', PM_2);
 
 //10.产品-商业产品团队
 var PM_3 = [
     {"name":"张学芳","jobNo":"1586"},
     {"name":"钟磊","jobNo":"3202"},
     {"name":"李婷","jobNo":"92398"},
-    {"name":"秦静","jobNo":"5772"},
+    {"name":"秦静","jobNo":"5722"},
     {"name":"刘睆璐","jobNo":"97549"},
     {"name":"张微","jobNo":"47635"},
     {"name":"唐欣楠","jobNo":"85753"},
@@ -289,6 +292,7 @@ var PM_3 = [
 PM_3.map(function (o) {
     return o.department = 'PM';
 });
+console.log('产品-商业产品团队', '\n', PM_3);
 
 //11.boss
 var Leader = [
@@ -298,9 +302,9 @@ var Leader = [
 ];
 
 
-var members = [].concat(FE, QA, APP, RD_1, RD_2, RD_3, RD_4, PM_1, PM_2, PM_3, Leader);
-console.log('最终名单', members);
 
+var members = [].concat(FE, QA, APP, RD_1, RD_2, RD_3, RD_4, PM_1, PM_2, PM_3, Leader);
+console.log('最终名单', members.length);
 
 //查重
 let repetition = members.filter(function(o,i,arr){
