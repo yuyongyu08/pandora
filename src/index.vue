@@ -195,7 +195,7 @@
             },
 
             validateGrade: function (grade) {
-                if(grade && grade.list.length >= grade.limitedCount){
+                if(grade && grade.list.length >= grade.limitedCount && grade.key != 0){
                     return alert( '【警告⚠️】' + grade.text + '已经抽取' +  grade.limitedCount + '个! ' )
                 }
                 return true;

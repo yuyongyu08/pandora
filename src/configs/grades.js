@@ -28,7 +28,7 @@ module.exports = [
     {
         key: 0,
         text: '特别奖',
-        limitedCount: 3,
+        limitedCount: '不限',
         roundSize: 1,
         list: [],
     },
