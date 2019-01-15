@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     mode: process.env.NODE_ENV,
     entry: {
-        tagcanvas: './src/lib/tagcanvas/tagcanvas.min',
+        tagcanvas: './src/libs/tagcanvas/tagcanvas.min',
         main: './src/index'
     },
     output: {

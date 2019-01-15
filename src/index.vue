@@ -57,10 +57,10 @@
 </template>
 
 <script>
-    import members from './config/members';
-    import grades from './config/grades';
-    import tagCanvasConfig from './config/tagCanvas';
-    let machine = tagCanvasConfig.sphere; //sphere, hcylinder
+    import members from './configs/members';
+    import grades from './configs/grades';
+    import tagCanvasConfig from './configs/tagCanvas';
+    let machine = tagCanvasConfig.sphere; //球体-sphere, 滚筒-hcylinder
 
     function renderTagList (el, dataList){
         let html = [ '<ul>' ];
@@ -98,7 +98,7 @@
         created(){
             //1.获奖名单
             this.luckyGuys.list = JSON.parse(localStorage.getItem(this.luckyGuys.key)) || [];
-            this.vaidateRepetiton(this.luckyGuys.list);
+            this.validateRepetition(this.luckyGuys.list);
 
             //2.缺席名单
             this.absenteeList.list = JSON.parse(localStorage.getItem(this.absenteeList.key)) || [];
@@ -130,7 +130,7 @@
             });
         },
         methods: {
-            vaidateRepetiton(list){
+            validateRepetition(list){
                 let repetition = list.filter(function(o,i,arr){
                     return arr.findIndex(function (v) {
                         return o.jobNo == v.jobNo
@@ -220,7 +220,7 @@
                     this.luckyGuys.list.push(luckyGuy);
                     this.remainingList.splice(index, 1);
                 }
-                this.vaidateRepetiton(this.luckyGuys.list);
+                this.validateRepetition(this.luckyGuys.list);
 
                 grade.list = grade.list.concat(this.currentLuckyGuys);
 
@@ -278,13 +278,6 @@
                     el.width = document.body.offsetWidth -100;
                     el.height = document.body.offsetHeight -100;
 
-                    // let html = [ '<ul>' ];
-                    // binding.value.forEach(function(item){
-                    //     html.push(`<li><a href="#" style="color: ${item.selected ? '#ff9a28': 'white'};">${item.department ? item.department + '-' : ''}${item.name}</a></li>`);
-                    // });
-                    // html.push('</ul>');
-                    // el.innerHTML = html.join('');
-
                     renderTagList(el, binding.value);
 
                     TagCanvas.Start('myCanvas', '', {
@@ -303,181 +296,5 @@
 
 <style lang="less">
     @import "./assets/css/reset";
-    html, body{
-        width: 100%;
-        height: 100%;
-    }
-
-    #myCanvasContainer{
-        text-align: center;
-    }
-
-    button{
-        display: inline-block;
-        margin: 5px;
-        padding: 10px;
-        text-align: center;
-        min-width: 60px;
-        border-radius: 2px;
-        border: none;
-        background-color: #E6E6E6;
-        color: #fff;
-        font-size: 14px;
-
-        &:focus {
-            outline: 0
-        }
-
-        &.success {
-            background: rgb(28, 184, 65);
-        }
-
-        &.warning {
-            background: #ff2419;
-            position: fixed;
-            right: 20px;
-            bottom: 20px;
-        }
-    }
-
-    .main{
-        overflow: hidden;
-        width: 100%;
-        height: 100%;
-        background: #121936 url(./assets/imgs/bgk.jpg) no-repeat center;
-        background-size: 100% 100% ;
-
-        .lucky-guys{
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            text-align: center;
-
-            .list{
-                width: 700px;
-                margin: 0 auto;
-                position: relative;
-                top: 20%;
-            }
-
-            .guy{
-                display: inline-block;
-                font-size: 20px;
-                min-width: 100px;
-                background: #fff;
-                line-height: 30px;
-                color: #1cb841;
-                margin: 5px;
-                border-radius: 10px;
-                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
-                padding: 10px;
-                position: relative;
-
-                .delete{
-                    position: absolute;
-                    bottom: 0;
-                    right: 0;
-                    width: 25px;
-                    height: 25px;
-                    display: none;
-                }
-
-                &:hover{
-                    .delete{
-                        display: inline-block;
-                    }
-                }
-            }
-        }
-
-        .trigger{
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .tool-bar{
-            position: absolute;
-            top: 0;
-            right: 0;
-            color: #FFF;
-            height: 100%;
-            background-color: rgba(230, 230, 230, 0.1);
-
-            &.hide{
-                transform: translateX(100%);
-            }
-
-            .config-trigger{
-                display: inline-block;
-                position: absolute;
-                top: 0;
-                right: 100%;
-                color: #fff;
-                padding: 10px;
-                background-color: rgba(230, 230, 230, 0.1);
-            }
-
-            .content{
-                margin: 20px 10px;
-            }
-
-            .bar{
-                line-height: 2em;
-            }
-
-            .grade, .round-size{
-                line-height: 2em;
-                vertical-align: text-top;
-            }
-
-            label{
-                font-size: 18px;
-                margin-right: 10px;
-                margin-left: 3px;
-            }
-
-            .lucky-list{
-                margin-top: 20px;
-
-                h2{
-                    font-size: 24px;
-                    text-align: center;
-                    line-height: 2em;
-
-                    .counter{
-                        color: #ff9a28;
-                    }
-                }
-
-                ul{
-                    width: 350px;
-                    float: right;
-
-                    li {
-                        width: 110px;
-                        line-height: 1.6em;
-                        word-wrap: break-word;
-                        word-break: keep-all;
-                        display: inline-block;
-                        margin-right: 5px;
-
-                        .delete{
-                            display: inline-block;
-                            width: 15px;
-                            height: 15px;
-                            background: #ff2419 url("./assets/imgs/item_delete.png") no-repeat center;
-                            background-size: 60%;
-                            border-radius: 50%;
-                            vertical-align: text-top;
-                            margin-right: 3px;
-                        }
-                    }
-                }
-            }
-        }
-
-    }
+    @import "./assets/css/index";
 </style>
