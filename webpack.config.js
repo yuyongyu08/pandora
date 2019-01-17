@@ -17,7 +17,6 @@ module.exports = {
         extensions: ['.js', '.vue', '.json', '.css']
     },
     devServer:{
-        host: '10.252.62.17',
         port: 8000,
         contentBase: './build'
     },
