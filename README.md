@@ -5,7 +5,7 @@
 
 1、**[DEMO地址](https://yuyongyu08.github.io/pandora/)**
 
-2、本项目并非原创，改编自[lottery](https://github.com/fouber/lottery)，主要改进：
+2、本项目参考了[lottery](https://github.com/fouber/lottery)，主要改进：
 
 功能：
 * 新增形状（球状、滚筒状）的配置
