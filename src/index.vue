@@ -18,6 +18,7 @@
             <div class="config-trigger" @click="toggleConfigView()">{{hideConfig ? '展开':'收起'}}</div>
             <div class="content" v-show="!hideConfig">
                 <div class="bar">
+                    <h2 class="label">奖项：</h2>
                     <template v-for="grade in grades">
                         <input
                                 :id="grade.key"
@@ -29,6 +30,7 @@
                     </template>
                 </div>
                 <div class="bar">
+                    <h2 class="label">每次抽取：</h2>
                     <template v-for="roundSize in roundSizes">
                         <input
                                 :id="roundSize"
